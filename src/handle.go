@@ -50,12 +50,12 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//log.Println(ImageID2Path(imgid))
 	f, err := os.OpenFile(ImageID2Path(imgid), os.O_WRONLY|os.O_CREATE, 0666)
+	defer f.Close()
 	if err != nil {
 		log.Println(err)
 		w.Write([]byte("Error:Save Error." + err.Error()))
 		return
 	}
-	defer f.Close()
 	io.Copy(f, file)
 	w.Write([]byte(imgid))
 }
