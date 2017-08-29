@@ -49,7 +49,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	//log.Println(ImageID2Path(imgid))
-	f, err := os.OpenFile(ImageID2Path(imgid), os.O_WRONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(ImageID2Path(imgid), os.O_RDWR|os.O_CREATE, 775)
 	defer f.Close()
 	if err != nil {
 		log.Println(err)
