@@ -6,37 +6,59 @@ import (
 	"os"
 	"io"
 	"log"
+	"io/ioutil"
+	"crypto/md5"
 )
 
+type ret_upload struct {
+	Err_no 		int 		`json:"err_no"`
+	Err_msg		string		`json:"err_msg"`
+	Image_url	string		`json:"image_url"`
+}
+
+func (data *ret_upload) general_ret(errNo int , errMsg string ){
+	data.Err_no = errNo
+	data.Err_msg = errMsg
+	log.Printf("image server err , errNo: %d errMsg: %s \n" , errNo ,  errMsg)
+}
+
+
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
-	//随机生成一个不存在的fileid
-	var imgid string
-	for{
-		imgid=MakeImageID()
-		if !FileExist(ImageID2Path(imgid)){
-			break
-		}
+
+	ret := ret_upload{
+		Err_no:0 ,
+		Err_msg:"success" ,
 	}
+
+
+	//随机生成一个fileid
+	var imgid string
+	imgid=MakeImageID()
+
 	//上传参数为uploadfile
 	r.ParseMultipartForm(32 << 20)
 	file, _, err := r.FormFile("uploadfile")
 	if err != nil {
-		log.Println(err)
-		w.Write([]byte("Error:Upload Error." + err.Error()))
+		ret.general_ret(-1 , err.Error())
+		bret , _ := Json_marshal(ret)
+		w.Write(bret)
 		return
 	}
 	defer file.Close()
 	//检测文件类型
-	buff := make([]byte, 512)
-    _, err = file.Read(buff)
+	body , err := ioutil.ReadAll(file)
+
     if err != nil {
-		log.Println(err)
-		w.Write([]byte("Error:Upload Error." + err.Error()))
+		ret.general_ret(-1 , err.Error())
+		bret , _ := Json_marshal(ret)
+		w.Write(bret)
 		return
     }
-    filetype := http.DetectContentType(buff)
+    filetype := http.DetectContentType(body)
 	if filetype!="image/jpeg"{
-		w.Write([]byte("Error:Not JPEG."))
+		ret.general_ret(-1 , "file type not jpeg")
+		bret , _ := Json_marshal(ret)
+		w.Write(bret)
 		return
 	}
 	//回绕文件指针
@@ -45,21 +67,29 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	//提前创建整棵存储树
-	if err=BuildTree(imgid); err!=nil{
+	dirpath , err := BuildTree(imgid)
+	if err != nil{
 		log.Println(err)
 	}
 	//log.Println(ImageID2Path(imgid))
 
+	// 获取文件md5
+	md5 := string(md5.New().Sum(body))
+	path := dirpath + "/" + md5
 
-	f, err := os.OpenFile(ImageID2Path(imgid), os.O_RDWR|os.O_CREATE, 0775)
+
+	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0775)
 	defer f.Close()
 	if err != nil {
-		log.Println(err)
-		w.Write([]byte("Error:Save Error." + err.Error()))
+		ret.general_ret(-1 , err.Error())
+		bret , _ := Json_marshal(ret)
+		w.Write(bret)
 		return
 	}
 	io.Copy(f, file)
+
 	w.Write([]byte(imgid))
+
 }
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +104,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Error:Image Not Found."))
 		return
 	}
+
 	http.ServeFile(w, r, imgpath)
 }
 
