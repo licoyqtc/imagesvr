@@ -91,8 +91,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	io.Copy(f, file)
 
-	w.Write([]byte(imgid))
 
+	bret , _ := Json_marshal(ret)
+	w.Write(bret)
 }
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
