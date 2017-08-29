@@ -8,6 +8,7 @@ import (
 	"log"
 	"io/ioutil"
 	"crypto/md5"
+	"encoding/hex"
 )
 
 type ret_upload struct {
@@ -74,7 +75,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	//log.Println(ImageID2Path(imgid))
 
 	// 获取文件md5
-	md5 := string(md5.New().Sum(body))
+	md5Ctx := md5.New()
+	md5Ctx.Write(body)
+	md5 := hex.EncodeToString(md5Ctx.Sum(nil))
 	path := dirpath + "/" + md5
 
 
