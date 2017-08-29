@@ -5,7 +5,7 @@ import(
 	"net/http"
 	"log"
 	"github.com/gorilla/mux"
-	"QuickImageServer/src"
+	"imagesvr/src"
 )
 	
 func main(){

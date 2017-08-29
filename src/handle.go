@@ -22,7 +22,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	file, _, err := r.FormFile("uploadfile")
 	if err != nil {
 		log.Println(err)
-		w.Write([]byte("Error:Upload Error."))
+		w.Write([]byte("Error:Upload Error." + err.Error()))
 		return
 	}
 	defer file.Close()
@@ -31,7 +31,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
     _, err = file.Read(buff)
     if err != nil {
 		log.Println(err)
-		w.Write([]byte("Error:Upload Error."))
+		w.Write([]byte("Error:Upload Error." + err.Error()))
 		return
     }
     filetype := http.DetectContentType(buff)
@@ -52,7 +52,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	f, err := os.OpenFile(ImageID2Path(imgid), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		log.Println(err)
-		w.Write([]byte("Error:Save Error."))
+		w.Write([]byte("Error:Save Error." + err.Error()))
 		return
 	}
 	defer f.Close()
