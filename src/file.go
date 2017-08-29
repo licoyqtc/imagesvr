@@ -31,5 +31,5 @@ func FileExist(filename string)bool{
 }
 
 func BuildTree(imageid string)error{
-	return os.MkdirAll(fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s/%s",Conf.Storage,imageid[0:2],imageid[2:4],imageid[4:6],imageid[6:8],imageid[8:10],imageid[10:12],imageid[12:14]),0666)
+	return os.MkdirAll(fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s/%s",Conf.Storage,imageid[0:2],imageid[2:4],imageid[4:6],imageid[6:8],imageid[8:10],imageid[10:12],imageid[12:14]),0775)
 }
