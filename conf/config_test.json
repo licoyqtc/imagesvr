@@ -1,5 +1,5 @@
 {
 	"ListenAddr":"0.0.0.0:10086",
 	"Storage":"/home/work/ownershipApp/assets/image" ,
-	"Domain" : "http://iamtest.yqtc.co/ownershipApp/assets"
+	"Domain" : "http://iamtest.yqtc.co/ownershipApp/assets/image"
 }
