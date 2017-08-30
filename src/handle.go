@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"crypto/md5"
 	"encoding/hex"
+	"strings"
 )
 
 type ret_upload struct {
@@ -56,8 +57,10 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
     }
     filetype := http.DetectContentType(body)
-	if filetype!="image/jpeg"{
-		ret.general_ret(-1 , "file type not jpeg")
+	imagetype := strings.Split(filetype , "/")
+
+	if imagetype[0]!="image"{
+		ret.general_ret(-1 , "file type not image")
 		bret , _ := Json_marshal(ret)
 		w.Write(bret)
 		return
@@ -78,7 +81,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	md5Ctx := md5.New()
 	md5Ctx.Write(body)
 	md5 := hex.EncodeToString(md5Ctx.Sum(nil))
-	path := dirpath + "/" + md5
+	path := dirpath + "/" + md5 + "." + imagetype[1]
 
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0775)
@@ -91,7 +94,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	io.Copy(f, file)
 
-
+	ret.Image_url = Conf.Domain + "/" + md5 + "." + imagetype[1]
 	bret , _ := Json_marshal(ret)
 	w.Write(bret)
 }

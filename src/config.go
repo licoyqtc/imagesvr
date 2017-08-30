@@ -9,6 +9,7 @@ import (
 type Config struct {
     ListenAddr string
     Storage string
+    Domain string
 }
 
 var Conf Config
