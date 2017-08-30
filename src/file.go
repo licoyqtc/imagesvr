@@ -30,7 +30,9 @@ func FileExist(filename string)bool{
 	}
 }
 
-func BuildTree(imageid string)(string ,error){
-	dirpath := fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s/%s",Conf.Storage,imageid[0:2],imageid[2:4],imageid[4:6],imageid[6:8],imageid[8:10],imageid[10:12],imageid[12:14])
-	return dirpath , os.MkdirAll(dirpath,0775)
+func BuildTree(imageid string)(string , string , error){
+	dir := fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s",imageid[0:2],imageid[2:4],imageid[4:6],imageid[6:8],imageid[8:10],imageid[10:12],imageid[12:14])
+
+	dirpath := fmt.Sprintf("%s/%s",Conf.Storage,dir)
+	return dirpath , dir , os.MkdirAll(dirpath,0775)
 }

@@ -71,7 +71,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	//提前创建整棵存储树
-	dirpath , err := BuildTree(imgid)
+	dirpath , dir , err := BuildTree(imgid)
 	if err != nil{
 		log.Println(err)
 	}
@@ -94,7 +94,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	io.Copy(f, file)
 
-	ret.Image_url = Conf.Domain + "/" + md5 + "." + imagetype[1]
+	ret.Image_url = Conf.Domain + "/" + dir + "/" + md5 + "." + imagetype[1]
 	bret , _ := Json_marshal(ret)
 	w.Write(bret)
 }
