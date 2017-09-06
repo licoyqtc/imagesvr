@@ -34,8 +34,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 
 	//随机生成一个fileid
-	var imgid string
-	imgid=MakeImageID()
+	//var imgid string
+	//imgid=MakeImageID()
 
 	//上传参数为uploadfile
 	r.ParseMultipartForm(32 << 20)
@@ -71,7 +71,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	//提前创建整棵存储树
-	dirpath , dir , err := BuildTree(imgid)
 	if err != nil{
 		log.Println(err)
 	}
@@ -81,8 +80,16 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	md5Ctx := md5.New()
 	md5Ctx.Write(body)
 	md5 := hex.EncodeToString(md5Ctx.Sum(nil))
+
+	dirpath , dir , err := BuildTree(md5)
+
 	path := dirpath + "/" + md5 + "." + imagetype[1]
 
+	if FileExist(path) {
+		ret.Image_url = Conf.Domain + "/" + dir + "/" + md5 + "." + imagetype[1]
+		bret , _ := Json_marshal(ret)
+		w.Write(bret)
+	}
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0775)
 	defer f.Close()
