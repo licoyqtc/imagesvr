@@ -84,11 +84,14 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	dirpath , dir , err := BuildTree(md5)
 
 	path := dirpath + "/" + md5 + "." + imagetype[1]
+	ret.Image_url = Conf.Domain + "/" + dir + "/" + md5 + "." + imagetype[1]
 
 	if FileExist(path) {
-		ret.Image_url = Conf.Domain + "/" + dir + "/" + md5 + "." + imagetype[1]
+
 		bret , _ := Json_marshal(ret)
 		w.Write(bret)
+		log.Printf("iamgesvr save ok ,image path : %s ret_path: %s\n",path , ret.Image_url)
+		return
 	}
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0775)
@@ -100,10 +103,10 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	io.Copy(f, file)
-
-	ret.Image_url = Conf.Domain + "/" + dir + "/" + md5 + "." + imagetype[1]
 	bret , _ := Json_marshal(ret)
 	w.Write(bret)
+
+	log.Printf("iamgesvr save ok ,image path : %s ret_path: %s\n",path , ret.Image_url)
 }
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
