@@ -1,5 +1,5 @@
 {
 	"ListenAddr":"0.0.0.0:10086",
 	"Storage":"/home/work/public/images" ,
-	"Domain" : "https://m.yqtc.co/image"
+	"Domain" : "https://image.yqtc.co/public/images"
 }
